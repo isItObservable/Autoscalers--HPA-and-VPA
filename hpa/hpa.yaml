@@ -1,0 +1,27 @@
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-frontend
+  namespace: hipster-shop
+  labels:
+    service: frontend
+    apps: hipsstershop
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: frontend
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Object
+      object:
+        metric:
+          name: ingress_request
+        describedObject:
+          apiVersion: v1
+          kind: Service
+          name: frontend
+        target:
+          type: Value
+          value: 25

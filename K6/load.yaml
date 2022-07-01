@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k6loadgenerator
+spec:
+  selector:
+    matchLabels:
+      app: loadgenerator
+      product: k6
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: loadgenerator
+        product: k6
+    spec:
+      terminationGracePeriodSeconds: 5
+      restartPolicy: Always
+      containers:
+        - name: k6load
+          image: hrexed/k6-prometheus:0.1
+          imagePullPolicy: Always
+          args: ["-u", "200", "-d", "2h"]
+          env:
+            - name: FRONTEND_ADDR
+              value: "autoscale.IP_TO_REPLACE.nip.io"
+            - name: K6_PROMETHEUS_REMOTE_URL
+              value: http://PROMETHEUS_SERVER.default.svc.cluster.local:9090/api/v1/write
+          resources:
+            requests:
+              cpu: 300m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
