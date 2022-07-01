@@ -71,6 +71,7 @@ With the public ip , we would be able to update the deployment of the ingress fo
 ```
 IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -ojson | jq -j '.status.loadBalancer.ingress[].ip')
 ```
+#### 2. Update the manifest files
 
 update the following files to update the ingress definitions :
 ```
@@ -81,7 +82,6 @@ sed -i "s,IP_TO_REPLACE,$IP," K6/load.yaml
 
 ### 5.Prometheus
 #### 1.Deploy
-
 ```
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
@@ -180,24 +180,24 @@ spec:
   version: v2.32.1
 ```
 
-#### 4. Deploy the Grafana ingress
+#### 3. Deploy the Grafana ingress
 ```
 kubectl apply -f grafana/ingress.yaml
 ```
 
 
-#### 5. Get The Prometheus service
+#### 4. Get The Prometheus service
 ```
 PROMETHEUS_SERVER=$(kubectl get svc -l app=kube-prometheus-stack-prometheus -o jsonpath="{.items[0].metadata.name}")
 sed -i "s,PROMETHEUS_SERVER,$PROMETHEUS_SERVER," kubernetes-manifests/k8s-manifest.yaml
 sed -i "s,PROMETHEUS_SERVER,$PROMETHEUS_SERVER," K6/load.yaml
 ```
-#### 6. Deploy the Nginx ServiceMonitor
+#### 5. Deploy the Nginx ServiceMonitor
 ```
 kubectl apply -f prometheus/servicemonitor.yaml -n ingress-nginx
 ```
 
-#### 7. Deploy the Prometheus adapter
+#### 6. Deploy the Prometheus adapter
 ```
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
@@ -258,7 +258,7 @@ To let the prometheus adapter takes our new rule, lets restart the prometheus ad
 ```
 kubectl delete pod -l app.kubernetes.io/name=prometheus-adapter
 ```
-#### 2. Deploy the HPA 
+#### 3. Deploy the HPA 
 ```
 kubectl apply -f hpa/hpa.yaml
 ```
@@ -311,7 +311,7 @@ let's wait few minutes and look at the suggested values:
 ```
 kubectl describe vpa frontend-vpa -n hipster-shop
 ```
-#### 2. Update the VPA
+#### 3. Update the VPA
 ```
 kubectl edit vpa frontend-vpa -n hipster-shop
 ```
